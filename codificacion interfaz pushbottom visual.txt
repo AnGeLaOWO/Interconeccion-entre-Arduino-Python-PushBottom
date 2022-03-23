@@ -1,0 +1,97 @@
+from tkinter import *
+import serial, time, os, keyboard
+
+from sympy import true
+
+
+arduino = serial.Serial("COM6", 9600)
+
+
+def modo_analogo():
+    os.system ("cls")
+    starciclo = 1
+    while starciclo != 0:
+        val = arduino.readline()
+        cad = int(val.decode('ascii'))
+        if cad == 2:
+            print("\nLed 1 ENCENDIDO")
+        if cad == 3:
+            print("\nLed 1 APAGADO")
+        if cad == 5:
+            print("\nLed 2 ENDENDIDO")
+        if cad == 0:
+            print("\nLed 2 APAGADO")
+            starciclo = 0
+    print("\nPara ocilar los leds presione la tecla A & L")
+    if  keyboard.is_pressed('a') and keyboard.is_pressed('l'):
+        print("\nOcilando led 1 y led 2")
+        
+
+
+def closeinterface():
+    arduino.close()
+    interfaz.destroy()
+
+
+def encender_led1():
+    contador = int(lbl_valor["text"])
+    lbl_valor["text"] = f"{contador + 1}"
+
+    if contador == 2:
+        arduino.write(b'1')
+        lbl_valor["text"] = 1
+        time.sleep(1)
+        
+    
+
+def encender_led2():
+    contador1 = int(lbl_valor2["text"])
+    lbl_valor2["text"] = f"{contador1 + 1}"
+    
+    if contador1 == 2:
+        arduino.write(b'2')
+        lbl_valor2["text"] = 1
+        time.sleep(1)
+
+
+interfaz = Tk()
+interfaz.geometry("600x200")
+interfaz.title("LAB2")
+
+titulo = Frame()
+titulo.config(bg="black", width="600", height = "150")
+titulo.place(x = 0, y = 0)
+
+titulolb = Label(titulo, text="INTERFAZ BOTTOM", bg="red", fg="white", font=("Comic Sans", 15))
+titulolb.place(x = 50, y = 20)
+
+botones = Frame()
+botones.config(bg="black", width = "600", height = "120") 
+botones.place(x = 0, y = 80)
+
+btpower = Button(botones, text = "PRIMER LED", command= encender_led1)
+btpower.place(x = 20, y = 5)
+
+lbl_title = Label(botones, text = "CONTPUL")
+lbl_title.place(x = 150, y =5)
+
+lbl_valor = Label(botones, text = 1)
+lbl_valor.place(x = 250, y =5)
+
+
+btoff = Button(botones, text = "SEGUNDO LED", command= encender_led2)
+btoff.place(x = 20, y = 40)
+
+lbl_title2 = Label(botones, text = "CONTPUL")
+lbl_title2.place(x = 150, y =40)
+lbl_valor2 = Label(botones, text = 1)
+lbl_valor2.place(x = 250, y =40) 
+
+btanalog = Button(botones, text = "PROTOBOARD", command= modo_analogo)
+btanalog.place(x = 450, y = 5)
+
+btnclose = Button(botones, text = "Cerrar", command = closeinterface)
+btnclose.place(x = 450, y = 40)
+
+
+interfaz.mainloop()
